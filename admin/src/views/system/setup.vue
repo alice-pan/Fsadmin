@@ -8,33 +8,41 @@
         <v-flex sm8>
           <v-card>
             <v-card-text>
-              <v-layout row>
-                <v-flex xs4>
-                  <v-subheader>System Title</v-subheader>
-                </v-flex>
-                <v-flex xs8>
-                  <v-text-field
-                    :rules="rules.required"
-                    name="input-1"
-                    label="Name"
-                    color="primary"
-                    id="testing"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
+                 <v-form
+      ref="form"
+      v-model="valid"
+      :lazy-validation="lazy"
+    >
+                <v-layout row>
+                  <v-flex xs4>
+                    <v-subheader>System Title</v-subheader>
+                  </v-flex>
+                  <v-flex xs8>
+                    <v-text-field
+                     
+                      v-model="name"
+                      label="Name"
+                      color="primary"
+                      :rules="nameRules"
+                      required
+                    ></v-text-field>
+                  </v-flex>
+                </v-layout>
 
-              <v-layout row>
-                <v-flex xs4>
-                  <v-subheader>Upload Logo</v-subheader>
-                </v-flex>
-                <v-flex xs8>
-                 <v-file-input accept="image/*" label="File input"></v-file-input>
-                </v-flex>
-              </v-layout>
+                <v-layout row>
+                  <v-flex xs4>
+                    <v-subheader>Upload Logo</v-subheader>
+                  </v-flex>
+                  <v-flex xs8>
+                    <v-file-input accept="image/*" label="File input"></v-file-input>
+                  </v-flex>
+                </v-layout>
+      </v-form>    
+
             </v-card-text>
             <v-card-actions class="pb-2">
               <v-spacer></v-spacer>
-              <v-btn color="primary" @click="save()">Save</v-btn>
+              <v-btn :disabled="!valid" color="primary" @click="save()">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -44,25 +52,27 @@
 </template>
 
 <script>
-
 export default {
-
   data() {
     return {
-      email: "",
-      rules: {
-        required: value => !!value || "Required."
-      }
-    }
+      lazy: false,
+      name: this.$root.system,
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => (v && v.length <= 40) || 'Name must be less than 40 characters',
+      ],
+      valid: true,
+    };
+  },
+  create(){
+    
+
   },
   computed: {
-      
+
   },
   methods: {
-    
-    save() {
-
-    }
+    save() {}
   }
-}
+};
 </script>
