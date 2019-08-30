@@ -9,9 +9,10 @@
           <v-data-table
             dense
             :headers="headers"
-            :items="menulist"
+            :items="menulist" 
             class="elevation-1"
             hide-default-footer
+           
           >
             <template v-slot:top>
               <v-toolbar flat color="white">
@@ -50,27 +51,42 @@
                 </v-dialog>
               </v-toolbar>
             </template>
-            <template v-slot:item.drag="{ item }">
-              <v-btn style="cursor: move" icon class="sortHandle">
+
+          <template v-slot:body="{ items }">
+        <tbody>
+          <tr v-for="item in items" :key="item.id" @click="open(item)" :class="{ 'secondary': item.index }">
+            <td><v-btn style="cursor: move" icon class="sortHandle">
                 <v-icon>drag_handle</v-icon>
-              </v-btn>
-            </template>
-            <template v-slot:item.action="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
-              <v-icon small @click="deleteItem(item)">delete</v-icon>
-            </template>
-            <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize">Reset</v-btn>
-            </template>
+              </v-btn></td>
+            <td>{{item.id}}</td>
+            <td>{{item.title}}</td>
+            <td>{{item.parameter}}</td>
+            <td>{{item.active}}</td>
+            <td><v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
+              <v-icon small @click="deleteItem(item)">delete</v-icon></td>
+          </tr>
+        </tbody>
+      </template>
+           
+           
           </v-data-table>
+        </v-flex>
+        
+        <v-flex sm8>
+          <v-divider class="divider"></v-divider>
+        </v-flex>
+        <v-flex sm8>
+          <div id="detail_table" v-if="detail_table_show" >detail_tabledetail_table</div>
+          
         </v-flex>
       </v-layout>
     </v-container>
   </div>
 </template>
 <script>
-import topMenu from "@/api/FuessMenuSetting";
+
 import Sortable from "sortablejs";
+import { mapState } from 'vuex'
 export default {
   data: () => ({
     dialog: false,
@@ -90,8 +106,9 @@ export default {
       { text: "Active", value: "active" },
       { text: "Actions", value: "action", sortable: false }
     ],
-    menulist: [],
+
     editedIndex: -1,
+    
     editedItem: {
       title: "",
       parameter: "",
@@ -101,9 +118,12 @@ export default {
       title: "",
       parameter: "",
       active: ""
-    }
+    },
+    detail_table_show: false,
+
   }),
   mounted() {
+    this.$store.dispatch('getTopMenu')
     let table = document.querySelector(".v-data-table tbody");
     const _self = this;
 
@@ -117,6 +137,10 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      menulist: state => state.menu.topmenu
+    }),
+    
     formTitle() {
       return this.editedIndex === -1 ? "Add Item" : "Edit Item";
     },
@@ -131,19 +155,15 @@ export default {
     }
   },
 
-  created() {
-    this.initialize();
-  },
-
   methods: {
-    initialize() {
-      this.menulist = topMenu;
-    },
 
     editItem(item) {
       this.editedIndex = this.menulist.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
+      this.detail_table_show = true;
+     
+     
     },
 
     deleteItem(item) {
@@ -162,7 +182,11 @@ export default {
     savetoserver() {
       console.log(this.menulist);
     },
-
+    open(val){
+      console.log(val.id)
+      this.$store.dispatch('getChildMenu',val.id)
+       
+    },
     save() {
       if (this.editedIndex > -1) {
         Object.assign(this.menulist[this.editedIndex], this.editedItem);
@@ -182,3 +206,6 @@ export default {
   }
 };
 </script>
+<style>
+
+</style>

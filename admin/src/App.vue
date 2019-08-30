@@ -10,5 +10,8 @@ export default {
   data: () => ({
     system:"Fuess"
   }),
+  create:{
+    
+  }
 };
 </script>
